@@ -1,0 +1,4 @@
+Cosas que hacer esta semana:
+- Terminar el esquema electrico de la máquina expendedora.
+- Modificar diseño de divisor de monedas.
+- Hacer Readme de impresión 3d y mecánica.
