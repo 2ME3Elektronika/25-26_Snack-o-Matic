@@ -1,0 +1,3 @@
+Cosas que hacer esta semana:
+  - Completar los README de la organización de proyecto, programación y seguimiento de proyecto
+  - Plantear programa del sistema del dinero
