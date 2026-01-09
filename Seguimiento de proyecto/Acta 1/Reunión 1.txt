@@ -5,4 +5,8 @@ Cosas de lo que hablar:
   - ¿Nos falta algo?
 
 Apuntes reunión:
-   - 
+   - Hacer una previsión de entradas y salidas sistema divisor de monedas
+   - Necesitamos un esquema de nuestro sistema, definir interfaces, planificación
+   - Habrá que reducir la lista de material (componentes de seguridad sustituir por bornas en un principio)
+   - Contrato de trabajo bien
+
