@@ -1,0 +1,5 @@
+Cosas que no se han hecho la anterior semana:
+  - Hacer los Readme correspondientes
+
+Cosas por hacer esta semana:
+  - Avanzar con el programa de dinero
