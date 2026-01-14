@@ -1,0 +1,8 @@
+Acta de la semana:
+- Terminar los diseños 3d preeliminares.
+- Terminar los esquemas electricos con todas las conexiones.
+- Prueba de materiales para prototipo.
+- Retocar los modelos 3d para que deslicen como deben.
+Hecho la semana pasada.
+- Modificación de archivo STL.
+- Terminados 2/3 de los esquemas electricos.
