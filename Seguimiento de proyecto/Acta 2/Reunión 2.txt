@@ -1,0 +1,10 @@
+Cosas de lo que hablar:
+  - Kanvan, cómo hacer y detalles que ayuden
+  - Impresiones 3D. Para el lunes a más tardar los necesitamos
+  - Recordatorio 4 fotocélulas y 5 servos
+  - Documentación, ¿cómo hacerlo exactamente?
+  - Posibilidad crear carpeta anuncios en GitHub (por si el coordinador falta)
+  - ¿Nos hace falta algo?
+
+Apuntes reunión:
+   - 
