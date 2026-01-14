@@ -1,5 +1,7 @@
 Cosas que no se han hecho la anterior semana:
-  - Hacer los Readme correspondientes
+  - Completar los README de la organización de proyecto, programación y seguimiento de proyecto
 
 Cosas por hacer esta semana:
   - Avanzar con el programa de dinero
+  - Completar los README de la organización de proyecto, programación y seguimiento de proyecto
+
