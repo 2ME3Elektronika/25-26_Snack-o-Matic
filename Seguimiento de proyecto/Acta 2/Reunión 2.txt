@@ -7,4 +7,6 @@ Cosas de lo que hablar:
   - ¿Nos hace falta algo?
 
 Apuntes reunión:
-   - 
+   - Servos el lunes
+   - Hacer la carpeta GitHub
+
