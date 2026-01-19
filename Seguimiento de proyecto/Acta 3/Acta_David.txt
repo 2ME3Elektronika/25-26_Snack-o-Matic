@@ -1,0 +1,7 @@
+Acta de la semana:
+- Terminar modelos 3D para montaje preeliminar.
+- Actualizar esquemas electricos.
+- Terminar cableado en protoboard.
+Tareas completadas de la semana pasada:
+- Terminar esquemas electricos (Aunque ahora hay que actualizarlos).
+- Finalizado parcialmente diseños 3D para empujador de monedas.
