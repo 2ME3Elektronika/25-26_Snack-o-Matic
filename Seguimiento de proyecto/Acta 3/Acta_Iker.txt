@@ -1,0 +1,6 @@
+Cosas que no se han hecho la anterior semana:
+  - Completar los README de la organización de proyecto, programación y seguimiento de proyecto
+
+Cosas por hacer esta semana:
+  - Terminar el programa del sistema de dinero
+  - Avanzar Proteus de la PCB 
