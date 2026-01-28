@@ -1,0 +1,7 @@
+Acta de esta semana:
+- Terminar y probar el cableado de los servos.
+- Preparar el prototipo para presentar.
+- Presentar.
+Acta de la semana pasada:
+- Modelos 3D impresos (Aún falta medir para servos).
+- Esquemas electricos actualizados.
