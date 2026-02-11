@@ -626,7 +626,7 @@ void loop()
   { 
     switch (Estado)
       {
-        case 0;
+        case 0:
 
           Lectura_de_5cent(); //Lee si se ha introducido una moneda de 5 céntimos
           Lectura_de_10cent(); //Lee si se ha introducido una moneda de 10 céntimos
@@ -639,7 +639,7 @@ void loop()
         
         break;
 
-        case 2;
+        case 1:
 
           Dispensa_Producto_1(); //Reconoce y en caso de pedrise dispensa el producto denominado 1
           Dispensa_Producto_2(); //Reconoce y en caso de pedrise dispensa el producto denominado 2
