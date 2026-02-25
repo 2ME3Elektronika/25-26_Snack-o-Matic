@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snack-o-Matic — Presentación Técnica</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow:wght@300;400;600;700;900&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0c0f; --surface:#111417; --surface2:#181c21; --border:#2a2f38;
+    --accent:#f5a623; --accent2:#00d4aa; --accent3:#e84545;
+    --text:#e8eaed; --text-dim:#7a8394;
+    --mono:'Share Tech Mono',monospace; --sans:'Barlow',sans-serif; --cond:'Barlow Condensed',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(245,166,35,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(245,166,35,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:260px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+  .sidebar-logo{padding:28px 24px 20px;border-bottom:1px solid var(--border);}
+  .logo-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+  .logo-title{font-family:var(--cond);font-size:28px;font-weight:900;line-height:1;}
+  .logo-title span{color:var(--accent);}
+  .logo-sub{font-size:11px;color:var(--text-dim);margin-top:6px;font-weight:300;}
+  .nav-section{padding:20px 0;flex:1;}
+  .nav-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:3px;padding:0 24px 8px;text-transform:uppercase;}
+  .nav-item{display:flex;align-items:center;gap:12px;padding:12px 24px;cursor:pointer;transition:all 0.2s;border-left:3px solid transparent;color:var(--text-dim);font-size:13px;}
+  .nav-item:hover{background:rgba(245,166,35,0.05);color:var(--text);border-left-color:rgba(245,166,35,0.4);}
+  .nav-item.active{background:rgba(245,166,35,0.08);color:var(--accent);border-left-color:var(--accent);font-weight:600;}
+  .nav-num{font-family:var(--mono);font-size:11px;color:var(--accent);min-width:20px;opacity:0.7;}
+  .nav-item.active .nav-num{opacity:1;}
+
+  .main{margin-left:260px;min-height:100vh;position:relative;z-index:1;}
+  .section{display:none;padding:48px 56px 80px;min-height:100vh;animation:fadeIn 0.3s ease;}
+  .section.active{display:block;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+  .section-header{margin-bottom:40px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+  .section-eyebrow{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:10px;}
+  .section-eyebrow::after{content:'';flex:1;max-width:60px;height:1px;background:var(--accent);opacity:0.4;}
+  .section-title{font-family:var(--cond);font-size:52px;font-weight:900;line-height:1;letter-spacing:-0.5px;}
+  .section-title .highlight{color:var(--accent);}
+
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:28px;margin-bottom:20px;position:relative;overflow:hidden;}
+  .card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:0.6;}
+  .card-title{font-family:var(--cond);font-size:18px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+  .card p{font-size:14px;line-height:1.8;color:var(--text-dim);font-weight:300;}
+  .card p strong{color:var(--text);font-weight:600;}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+  .spec-row{display:flex;align-items:flex-start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.04);gap:16px;}
+  .spec-row:last-child{border-bottom:none;}
+  .spec-key{font-family:var(--mono);font-size:11px;color:var(--text-dim);min-width:220px;text-transform:uppercase;letter-spacing:1px;padding-top:1px;}
+  .spec-val{font-size:13px;color:var(--text);font-weight:600;line-height:1.5;}
+
+  .sub-label{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin:28px 0 12px;display:flex;align-items:center;gap:10px;}
+  .sub-label::after{content:'';flex:1;height:1px;background:var(--border);}
+
+  .hero-banner{background:linear-gradient(135deg,var(--surface) 0%,var(--surface2) 100%);border:1px solid var(--border);border-radius:4px;padding:28px 36px;margin-bottom:32px;position:relative;overflow:hidden;}
+  .hero-banner::after{content:'SNACK-O-MATIC';position:absolute;right:-20px;bottom:-10px;font-family:var(--cond);font-size:80px;font-weight:900;color:rgba(245,166,35,0.04);pointer-events:none;}
+  .hero-eyebrow{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
+  .hero-title{font-family:var(--cond);font-size:48px;font-weight:900;line-height:0.95;margin-bottom:12px;}
+  .hero-title .sub{display:block;color:var(--accent);font-size:30px;}
+  .hero-desc{font-size:14px;color:var(--text-dim);line-height:1.7;max-width:560px;font-weight:300;}
+  .tech-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+  .tech-pill{padding:4px 11px;background:transparent;border:1px solid var(--border);border-radius:3px;font-family:var(--mono);font-size:11px;color:var(--text-dim);line-height:1.6;white-space:nowrap;}
+
+  .blk-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:20px 24px;margin-bottom:14px;}
+  .blk-title{font-family:var(--cond);font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+  .blk-text{font-size:13px;color:var(--text-dim);line-height:1.7;font-weight:300;}
+  .blk-text strong{color:var(--text);font-weight:600;}
+
+  .blockdiag{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:32px 24px;overflow-x:auto;margin-bottom:0;}
+  .bd-row{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap;}
+  .bd-col{display:flex;flex-direction:column;align-items:center;gap:0;}
+  .bd-node{border:2px solid var(--border);border-radius:6px;padding:10px 14px;text-align:center;font-family:var(--sans);font-size:12px;font-weight:600;line-height:1.3;min-width:110px;max-width:130px;position:relative;}
+  .bd-node .bd-icon{font-size:18px;display:block;margin-bottom:4px;}
+  .bd-node .bd-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;}
+  .bd-node .bd-sub{font-size:10px;font-weight:300;color:var(--text-dim);margin-top:2px;font-family:var(--mono);}
+  .bd-arrow-h{display:flex;align-items:center;color:var(--border);font-size:20px;padding:0 4px;flex-shrink:0;}
+  .bd-arrow-v{display:flex;flex-direction:column;align-items:center;color:var(--border);font-size:18px;padding:4px 0;}
+  .bd-main{border-color:var(--accent2);background:rgba(0,212,170,0.07);color:var(--accent2);}
+  .bd-orange{border-color:var(--accent);background:rgba(245,166,35,0.07);color:var(--accent);}
+  .bd-blue{border-color:#5b8dee;background:rgba(91,141,238,0.07);color:#5b8dee;}
+  .bd-purple{border-color:#c97ef5;background:rgba(201,126,245,0.07);color:#c97ef5;}
+  .bd-red{border-color:var(--accent3);background:rgba(232,69,69,0.07);color:var(--accent3);}
+  .bd-yellow{border-color:#f5d823;background:rgba(245,216,35,0.07);color:#f5d823;}
+  .bd-gray{border-color:var(--border);background:var(--surface);color:var(--text-dim);}
+
+  .flow-outer{display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 0 16px;width:100%;max-width:500px;margin:0 auto;}
+  .fn-oval{background:var(--accent);color:#000;font-family:var(--mono);font-size:12px;font-weight:700;padding:10px 28px;border-radius:50px;text-align:center;min-width:160px;display:inline-block;}
+  .fn-oval.end{background:var(--accent2);}
+  .fn-rect{background:var(--surface2);border:2px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:13px;padding:12px 18px;text-align:center;width:380px;line-height:1.5;}
+  .fn-rect strong{color:var(--accent);font-weight:700;}
+  .fn-rect.teal{border-color:rgba(0,212,170,0.5);background:rgba(0,212,170,0.05);}
+  .fn-rect.orange{border-color:rgba(245,166,35,0.5);background:rgba(245,166,35,0.05);}
+  .fn-rect.red{border-color:rgba(232,69,69,0.4);background:rgba(232,69,69,0.05);}
+  .f-arrow{display:flex;flex-direction:column;align-items:center;padding:2px 0;gap:0;line-height:1;}
+  .f-arrow .f-line{width:2px;height:20px;background:var(--border);}
+  .f-arrow .f-tip{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--border);}
+  .f-label{font-family:var(--mono);font-size:10px;text-align:center;margin:2px 0;letter-spacing:0.5px;}
+  .f-label.yes{color:var(--accent2);}
+  .f-label.no{color:var(--text-dim);}
+  .f-label.loop{color:var(--accent3);}
+  .fn-group{display:grid;gap:8px;width:380px;}
+  .fn-group.c2{grid-template-columns:1fr 1fr;}
+  .fn-group-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:10px 8px;font-size:12px;color:var(--text-dim);text-align:center;line-height:1.4;}
+  .fn-group-item .gi{font-size:16px;display:block;margin-bottom:3px;}
+  .fn-group-item .gs{font-family:var(--mono);font-size:9px;color:var(--accent);margin-top:2px;display:block;}
+
+  /* Problemas */
+  .problem-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent3);border-radius:0 4px 4px 0;padding:18px 22px;margin-bottom:10px;}
+  .solution-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent2);border-radius:0 4px 4px 0;padding:18px 22px;margin-bottom:22px;}
+  .plabel{font-family:var(--mono);font-size:9px;letter-spacing:3px;text-transform:uppercase;margin-bottom:6px;}
+  .plabel.p{color:var(--accent3);} .plabel.s{color:var(--accent2);}
+  .connector-down{display:flex;justify-content:center;padding:2px 0;color:var(--text-dim);font-size:18px;opacity:0.3;}
+  .static-p{font-size:14px;color:var(--text-dim);line-height:1.7;font-weight:300;min-height:40px;width:100%;}
+
+  /* Arreglos */
+  .arreglo-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:22px 26px;margin-bottom:16px;}
+  .arreglo-plabel{font-family:var(--mono);font-size:9px;color:var(--accent3);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;}
+  .arreglo-slabel{font-family:var(--mono);font-size:9px;color:var(--accent2);letter-spacing:3px;text-transform:uppercase;margin-bottom:4px;margin-top:14px;}
+  .arreglo-num-badge{font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-bottom:10px;}
+  .arreglo-status-row{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+  .arreglo-status-label{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;margin-right:6px;}
+  .status-badge{width:32px;height:32px;border-radius:50%;font-size:15px;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .status-badge.ok{border:2px solid var(--accent2);background:rgba(0,212,170,0.2);color:var(--accent2);}
+  .status-badge.fail{border:2px solid var(--accent3);background:rgba(232,69,69,0.2);color:var(--accent3);}
+  .status-text{font-family:var(--mono);font-size:10px;letter-spacing:1px;}
+  .status-text.ok{color:var(--accent2);}
+  .status-text.fail{color:var(--accent3);}
+
+  /* Conclusiones */
+  .conc-item{display:flex;gap:20px;padding:18px 0;border-bottom:1px solid rgba(255,255,255,0.05);align-items:flex-start;}
+  .conc-num{font-family:var(--mono);font-size:28px;font-weight:700;color:rgba(245,166,35,0.2);min-width:48px;line-height:1;}
+  .conc-text{font-size:14px;color:var(--text-dim);line-height:1.7;font-weight:300;flex:1;}
+
+  .progress-bar{position:fixed;top:0;left:260px;right:0;height:2px;background:rgba(245,166,35,0.1);z-index:200;}
+  .progress-fill{height:100%;background:var(--accent);width:calc(100%/6);transition:width 0.25s;}
+  .statusbar{position:fixed;bottom:0;left:260px;right:0;height:32px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100;}
+  .status-item{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:1px;display:flex;align-items:center;gap:6px;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:var(--accent2);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="pFill"></div></div>
+
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-tag">25–26 // Proyecto</div>
+    <div class="logo-title">Snack-<span>o</span>-Matic</div>
+    <div class="logo-sub">Máquina Expendedora Inteligente</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Índice</div>
+    <div class="nav-item active" onclick="go('intro',this)"><span class="nav-num">01</span> Introducción</div>
+    <div class="nav-item" onclick="go('bloques',this)"><span class="nav-num">02</span> Diagrama de Bloques</div>
+    <div class="nav-item" onclick="go('detalle',this)"><span class="nav-num">03</span> Descripción Detallada</div>
+    <div class="nav-item" onclick="go('problemas',this)"><span class="nav-num">04</span> Problemas &amp; Soluciones</div>
+    <div class="nav-item" onclick="go('arreglos',this)"><span class="nav-num">05</span> Arreglos</div>
+    <div class="nav-item" onclick="go('conclusiones',this)"><span class="nav-num">06</span> Conclusiones</div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ══════ 01 INTRO ══════ -->
+<section class="section active" id="intro">
+  <div class="section-header">
+    <div class="section-eyebrow">01 // Presentación técnica</div>
+    <div class="section-title">Introducción &amp; <br><span class="highlight">Contextualización</span></div>
+  </div>
+
+  <div class="hero-banner">
+    <div class="hero-eyebrow">Proyecto 25–26 // Wally SL</div>
+    <h1 class="hero-title">Snack-o-Matic<span class="sub">Tu Marca, Tu Máquina</span></h1>
+    <p class="hero-desc">Diseño y construcción de una <strong>máquina expendedora funcional</strong> basada en Arduino Mega 2560, integrando sistemas mecánicos impresos en 3D, electrónica de control y software embebido para la validación de monedas y el dispensado automático de productos.</p>
+    <div class="tech-pills">
+      <span class="tech-pill">Arduino Mega 2560</span>
+      <span class="tech-pill">C / C++</span>
+      <span class="tech-pill">Impresión 3D FDM</span>
+      <span class="tech-pill">Proteus / PCB</span>
+      <span class="tech-pill">LCD I²C 20×4</span>
+      <span class="tech-pill">EEPROM</span>
+      <span class="tech-pill">Servos SG90</span>
+      <span class="tech-pill">Motores Sinfín DC</span>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">🎯 Objetivo del proyecto</div>
+      <p>Diseñar y construir una <strong>máquina expendedora inteligente y personalizable</strong> que permita a marcas comerciales ofrecer sus productos en formato de venta autónoma. El sistema gestiona la inserción de monedas, calcula el saldo, dispensa el producto seleccionado y devuelve el cambio exacto, todo de forma automatizada.</p>
+    </div>
+    <div class="card">
+      <div class="card-title">📋 Contexto y motivación</div>
+      <p>El proyecto nace de una necesidad real del mercado: las máquinas expendedoras genéricas <strong>no permiten personalización de marca ni gestión delegada</strong>. Bajo la empresa <strong>Wally SL</strong> (David, Ibon e Iker), el equipo propone un servicio integral de diseño, fabricación, ubicación y mantenimiento de máquinas con identidad de marca.</p>
+    </div>
+  </div>
+
+  <div class="sub-label">Especificaciones técnicas</div>
+  <div class="card">
+    <div class="spec-row"><span class="spec-key">Microcontrolador</span><span class="spec-val">Arduino Mega 2560</span></div>
+    <div class="spec-row"><span class="spec-key">Lenguaje</span><span class="spec-val">C / C++ (Arduino IDE)</span></div>
+    <div class="spec-row"><span class="spec-key">Fabricación mecánica</span><span class="spec-val">Impresión 3D FDM — PLA/PETG, 0.2 mm capa, 20–30% infill</span></div>
+    <div class="spec-row"><span class="spec-key">Diseño electrónico</span><span class="spec-val">Proteus (simulación) + PCB relés custom (5V → 24V)</span></div>
+    <div class="spec-row"><span class="spec-key">Interfaz usuario</span><span class="spec-val">LCD I²C 20×4 (dir. 0x27, pines SDA/SCL 20–21)</span></div>
+    <div class="spec-row"><span class="spec-key">Almacenamiento</span><span class="spec-val">EEPROM interna del Arduino (stock de monedas persistente)</span></div>
+    <div class="spec-row"><span class="spec-key">Sensores de monedas</span><span class="spec-val">6 sensores digitales INPUT_PULLUP — 5¢·10¢·20¢·50¢·1€·2€ (pines 14–19)</span></div>
+    <div class="spec-row"><span class="spec-key">Dispensado</span><span class="spec-val">4 motores DC sinfín (pines 7–10) + fotocélula detector (pin 6)</span></div>
+    <div class="spec-row"><span class="spec-key">Devolución cambio</span><span class="spec-val">6 servos SG90/MG90 (pines 27–32) — algoritmo greedy</span></div>
+    <div class="spec-row"><span class="spec-key">Botones</span><span class="spec-val">4 producto + 1 devolución (pines 22–25, 33)</span></div>
+    <div class="spec-row"><span class="spec-key">Precios</span><span class="spec-val">P1: 1,20€ · P2: 1,50€ · P3: 1,70€ · P4: 2,00€</span></div>
+  </div>
+</section>
+
+<!-- ══════ 02 DIAGRAMA DE BLOQUES ══════ -->
+<section class="section" id="bloques">
+  <div class="section-header">
+    <div class="section-eyebrow">02 // Arquitectura general</div>
+    <div class="section-title">Diagrama de <br><span class="highlight">Bloques</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🧱 Sistema completo — Vista general</div>
+    <div class="blockdiag">
+      <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px;">ENTRADAS</div>
+      <div class="bd-row" style="gap:8px;justify-content:center;flex-wrap:wrap;">
+        <div class="bd-node bd-orange"><span class="bd-icon">🪙</span><span class="bd-label">Sensores<br>Monedas</span><span class="bd-sub">x6 — pines 14-19</span></div>
+        <div class="bd-node bd-blue"><span class="bd-icon">🔘</span><span class="bd-label">Botones<br>Producto</span><span class="bd-sub">x4 — pines 22-25</span></div>
+        <div class="bd-node bd-gray"><span class="bd-icon">↩️</span><span class="bd-label">Botón<br>Devolución</span><span class="bd-sub">pin 33</span></div>
+        <div class="bd-node bd-gray"><span class="bd-icon">👁️</span><span class="bd-label">Fotocélula<br>Detector</span><span class="bd-sub">pin 6</span></div>
+      </div>
+      <div style="display:flex;justify-content:center;padding:10px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:var(--border);"></div>
+          <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--border);"></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-bottom:0;">
+        <div class="bd-node bd-main" style="min-width:180px;padding:14px 20px;">
+          <span class="bd-icon">🎛️</span>
+          <span class="bd-label" style="font-size:13px;">ARDUINO MEGA 2560</span>
+          <span class="bd-sub">Unidad de control central</span>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;padding:10px 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div style="width:2px;height:20px;background:var(--border);"></div>
+          <div style="width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid var(--border);"></div>
+        </div>
+      </div>
+      <div style="text-align:center;font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:2px;margin-bottom:12px;">SALIDAS</div>
+      <div class="bd-row" style="gap:8px;justify-content:center;flex-wrap:wrap;">
+        <div class="bd-node bd-blue"><span class="bd-icon">⚙️</span><span class="bd-label">Motores<br>Sinfín</span><span class="bd-sub">x4 — pines 7-10</span></div>
+        <div class="bd-node bd-orange"><span class="bd-icon">🔁</span><span class="bd-label">Servos<br>Cambio</span><span class="bd-sub">x6 — pines 27-32</span></div>
+        <div class="bd-node bd-purple"><span class="bd-icon">🖥️</span><span class="bd-label">Pantalla<br>LCD</span><span class="bd-sub">I²C pines 20-21</span></div>
+        <div class="bd-node bd-red"><span class="bd-icon">💾</span><span class="bd-label">EEPROM<br>Memoria</span><span class="bd-sub">interna Arduino</span></div>
+        <div class="bd-node bd-yellow"><span class="bd-icon">⚡</span><span class="bd-label">PCB Relés<br>5V→24V</span><span class="bd-sub">alimentación</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 Bloque — Validación de Monedas</div>
+    <div class="blockdiag">
+      <div class="bd-row" style="gap:0;justify-content:center;align-items:center;">
+        <div class="bd-col" style="gap:6px;">
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 5¢</span><span class="bd-sub">pin 15</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 10¢</span><span class="bd-sub">pin 14</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 20¢</span><span class="bd-sub">pin 16</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 50¢</span><span class="bd-sub">pin 18</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 1€</span><span class="bd-sub">pin 17</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:100px;padding:8px 6px;"><span class="bd-icon">🪙</span><span class="bd-label" style="font-size:10px;">Sensor 2€</span><span class="bd-sub">pin 19</span></div>
+        </div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-node bd-main" style="min-width:130px;"><span class="bd-icon">🎛️</span><span class="bd-label">Arduino<br>Mega</span><span class="bd-sub">suma acumulada</span></div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-col" style="gap:10px;">
+          <div class="bd-node bd-red" style="min-width:100px;"><span class="bd-icon">💾</span><span class="bd-label" style="font-size:10px;">EEPROM</span><span class="bd-sub">stock monedas</span></div>
+          <div class="bd-node bd-purple" style="min-width:100px;"><span class="bd-icon">🖥️</span><span class="bd-label" style="font-size:10px;">LCD</span><span class="bd-sub">saldo €</span></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">Seis sensores digitales (INPUT_PULLUP) detectan cada denominación. Al detectar nivel LOW el Arduino espera 100ms (anti-rebote), suma el valor al saldo y guarda el contador en EEPROM. La LCD se actualiza mostrando el nuevo saldo.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔧 Bloque — Sistema de Dispensado</div>
+    <div class="blockdiag">
+      <div class="bd-row" style="gap:0;justify-content:center;align-items:center;">
+        <div class="bd-col" style="gap:8px;">
+          <div class="bd-node bd-blue" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔘</span><span class="bd-label" style="font-size:10px;">Botón 1</span><span class="bd-sub">pin 22</span></div>
+          <div class="bd-node bd-blue" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔘</span><span class="bd-label" style="font-size:10px;">Botón 2</span><span class="bd-sub">pin 23</span></div>
+          <div class="bd-node bd-blue" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔘</span><span class="bd-label" style="font-size:10px;">Botón 3</span><span class="bd-sub">pin 24</span></div>
+          <div class="bd-node bd-blue" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔘</span><span class="bd-label" style="font-size:10px;">Botón 4</span><span class="bd-sub">pin 25</span></div>
+        </div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-node bd-main" style="min-width:120px;"><span class="bd-icon">🎛️</span><span class="bd-label">Arduino<br>Mega</span><span class="bd-sub">valida saldo</span></div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-col" style="gap:8px;">
+          <div class="bd-node bd-yellow" style="min-width:100px;"><span class="bd-icon">⚡</span><span class="bd-label" style="font-size:10px;">PCB Relés</span><span class="bd-sub">5V → 24V</span></div>
+          <div class="bd-arrow-v" style="font-size:14px;">↓</div>
+          <div class="bd-node bd-blue" style="min-width:100px;"><span class="bd-icon">⚙️</span><span class="bd-label" style="font-size:10px;">Motor 1–4</span><span class="bd-sub">sinfín</span></div>
+          <div class="bd-arrow-v" style="font-size:14px;">↑ confirma</div>
+          <div class="bd-node bd-gray" style="min-width:100px;"><span class="bd-icon">👁️</span><span class="bd-label" style="font-size:10px;">Fotocélula</span><span class="bd-sub">pin 6</span></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">El Arduino verifica que el saldo sea suficiente. Si es así, activa el motor del producto elegido a través de la PCB de relés (que eleva la tensión de 5V a 24V). La fotocélula detecta cuando el producto pasa por la salida y apaga el motor.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">↩️ Bloque — Devolución de Cambio</div>
+    <div class="blockdiag">
+      <div class="bd-row" style="gap:0;justify-content:center;align-items:center;">
+        <div class="bd-col" style="gap:8px;">
+          <div class="bd-node bd-gray" style="min-width:100px;"><span class="bd-icon">↩️</span><span class="bd-label" style="font-size:10px;">Botón Dev.</span><span class="bd-sub">pin 33</span></div>
+          <div style="font-family:var(--mono);font-size:9px;color:var(--text-dim);text-align:center;">o tras compra</div>
+        </div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-node bd-main" style="min-width:120px;"><span class="bd-icon">🎛️</span><span class="bd-label">Arduino<br>Greedy</span><span class="bd-sub">mayor a menor</span></div>
+        <div class="bd-arrow-h">→</div>
+        <div class="bd-col" style="gap:6px;">
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 2€</span><span class="bd-sub">pin 32</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 1€</span><span class="bd-sub">pin 30</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 50¢</span><span class="bd-sub">pin 31</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 20¢</span><span class="bd-sub">pin 29</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 10¢</span><span class="bd-sub">pin 27</span></div>
+          <div class="bd-node bd-orange" style="min-width:90px;max-width:110px;padding:8px;"><span class="bd-icon">🔁</span><span class="bd-label" style="font-size:10px;">Servo 5¢</span><span class="bd-sub">pin 28</span></div>
+        </div>
+      </div>
+    </div>
+    <p style="margin-top:16px;">El algoritmo greedy selecciona siempre la denominación más grande posible. Cada servo gira 0°→180°→0° para expulsar una moneda. El proceso se repite hasta que el saldo llega a cero.</p>
+  </div>
+
+  <div class="sub-label">Descripción de los bloques</div>
+  <div class="grid-2">
+    <div class="blk-card" style="border-top:2px solid var(--accent2);">
+      <div class="blk-title" style="color:var(--accent2);">🎛️ Unidad de Control</div>
+      <div class="blk-text">Núcleo del sistema. Implementa una <strong>máquina de dos estados</strong>: Estado 0 (lectura monedas) y Estado 1 (selección + dispensado).</div>
+    </div>
+    <div class="blk-card" style="border-top:2px solid var(--accent);">
+      <div class="blk-title" style="color:var(--accent);">💰 Validación de Monedas</div>
+      <div class="blk-text">6 sensores detectan monedas, acumulan el saldo y guardan el stock en EEPROM con anti-rebote de 100ms.</div>
+    </div>
+    <div class="blk-card" style="border-top:2px solid #5b8dee;">
+      <div class="blk-title" style="color:#5b8dee;">🔧 Sistema de Dispensado</div>
+      <div class="blk-text">4 motores sinfín controlados por relés (5V→24V). La fotocélula confirma la salida del producto.</div>
+    </div>
+    <div class="blk-card" style="border-top:2px solid #c97ef5;">
+      <div class="blk-title" style="color:#c97ef5;">🖥️ LCD 20×4</div>
+      <div class="blk-text">Muestra saldo, precio seleccionado y mensajes de estado. Avisa si no hay cambio disponible.</div>
+    </div>
+    <div class="blk-card" style="border-top:2px solid var(--accent3);">
+      <div class="blk-title" style="color:var(--accent3);">💾 EEPROM</div>
+      <div class="blk-text">Stock persistente de cada denominación. Se recupera al reiniciar sin perder datos.</div>
+    </div>
+    <div class="blk-card" style="border-top:2px solid #f5d823;">
+      <div class="blk-title" style="color:#f5d823;">⚡ PCB de Relés</div>
+      <div class="blk-text">Interfaz entre la lógica de 5V del Arduino y los motores DC de 24V. Diseñada en Proteus.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 03 DESCRIPCIÓN DETALLADA ══════ -->
+<section class="section" id="detalle">
+  <div class="section-header">
+    <div class="section-eyebrow">03 // Implementación técnica</div>
+    <div class="section-title">Descripción <span class="highlight">Detallada</span></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔄 Flujo general del programa</div>
+    <p style="margin-bottom:24px;">El programa arranca, carga los datos guardados y entra en un bucle que alterna entre <strong>esperar monedas</strong> y <strong>gestionar la venta</strong>.</p>
+    <div class="flow-outer">
+      <div class="fn-oval">▶ INICIO</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect"><strong>Preparar el sistema</strong><br>Cargar stock de la memoria · Encender pantalla<br>Poner servos y motores en reposo</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect orange"><strong>Bucle principal (se repite siempre)</strong></div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="display:block;">
+          <polygon points="190,4 376,40 190,76 4,40" fill="rgba(245,166,35,0.12)" stroke="#f5a623" stroke-width="2"/>
+          <text x="190" y="36" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#f5a623">¿Hay dinero</text>
+          <text x="190" y="54" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#f5a623">introducido?</text>
+        </svg>
+      </div>
+      <div style="display:flex;width:380px;justify-content:space-between;padding:0 30px;margin:4px 0;">
+        <span class="f-label no">NO ↓</span>
+        <span class="f-label yes">SÍ ↓</span>
+      </div>
+      <div style="display:flex;width:380px;gap:12px;margin-bottom:4px;">
+        <div class="fn-rect" style="flex:1;font-size:12px;">Seguir leyendo los sensores de monedas</div>
+        <div class="fn-rect teal" style="flex:1;font-size:12px;">Mostrar opciones de producto al usuario</div>
+      </div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-group c2" style="width:380px;">
+        <div class="fn-group-item"><span class="gi">1️⃣</span>Producto 1<span class="gs">≥ 1,20€</span></div>
+        <div class="fn-group-item"><span class="gi">2️⃣</span>Producto 2<span class="gs">≥ 1,50€</span></div>
+        <div class="fn-group-item"><span class="gi">3️⃣</span>Producto 3<span class="gs">≥ 1,70€</span></div>
+        <div class="fn-group-item"><span class="gi">4️⃣</span>Producto 4<span class="gs">≥ 2,00€</span></div>
+      </div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect" style="font-size:12px;color:var(--text-dim);">Dispensar · Devolver cambio si hay · Volver al inicio ↺</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">💰 ¿Cómo se detecta una moneda?</div>
+    <p style="margin-bottom:24px;">Este proceso se ejecuta para las <strong>6 denominaciones</strong> a la vez en cada iteración del bucle.</p>
+    <div class="flow-outer">
+      <div class="fn-oval">El usuario mete una moneda</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect"><strong>El sensor detecta la moneda</strong><br>La señal baja a LOW cuando la moneda pasa</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect"><strong>Esperar a que la moneda pase del todo</strong><br>100ms de espera hasta que la señal vuelve a HIGH<br><span style="font-size:11px;color:var(--text-dim);">(evita contar la misma moneda dos veces)</span></div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect teal"><strong>Sumar el valor al saldo total</strong><br>Ejemplo: saldo = saldo + 10 céntimos</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect teal"><strong>Guardar en memoria (EEPROM)</strong><br>Se apunta cuántas monedas de este tipo hay<br><span style="font-size:11px;color:var(--text-dim);">(para poder dar cambio después)</span></div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect"><strong>Actualizar la pantalla LCD</strong><br>Mostrar el nuevo saldo al usuario</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-oval end">✓ Moneda registrada</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔧 ¿Cómo se dispensa un producto?</div>
+    <p style="margin-bottom:24px;">El proceso es el mismo para los <strong>4 productos</strong>. Solo cambia el precio y el motor que se activa.</p>
+    <div class="flow-outer">
+      <div class="fn-oval">El usuario pulsa un botón de producto</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="display:block;">
+          <polygon points="190,4 376,40 190,76 4,40" fill="rgba(245,166,35,0.10)" stroke="#f5a623" stroke-width="2"/>
+          <text x="190" y="36" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#f5a623">¿Tiene saldo</text>
+          <text x="190" y="54" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#f5a623">suficiente?</text>
+        </svg>
+      </div>
+      <div style="display:flex;width:380px;justify-content:space-between;padding:0 30px;margin:4px 0;">
+        <span class="f-label no">NO ↓</span>
+        <span class="f-label yes">SÍ ↓</span>
+      </div>
+      <div style="display:flex;width:380px;gap:12px;margin-bottom:4px;">
+        <div class="fn-rect" style="flex:1;font-size:12px;">Pantalla muestra el precio del producto</div>
+        <div class="fn-rect teal" style="flex:1;font-size:12px;">Restar precio del saldo<br>Pantalla: "Dispensando..."</div>
+      </div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect"><strong>Encender el motor del sinfín</strong><br>El sinfín empuja el producto hacia la salida</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="display:block;">
+          <polygon points="190,4 376,40 190,76 4,40" fill="rgba(0,212,170,0.08)" stroke="#00d4aa" stroke-width="2"/>
+          <text x="190" y="36" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#00d4aa">¿La fotocélula detecta</text>
+          <text x="190" y="54" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#00d4aa">que salió el producto?</text>
+        </svg>
+      </div>
+      <div class="f-label loop">NO → el motor sigue girando ↑</div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ ↓</div>
+      <div class="fn-rect"><strong>Apagar el motor</strong></div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="80" viewBox="0 0 380 80" style="display:block;">
+          <polygon points="190,4 376,40 190,76 4,40" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="36" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#e84545">¿Queda cambio</text>
+          <text x="190" y="54" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#e84545">a devolver?</text>
+        </svg>
+      </div>
+      <div class="f-label yes">SÍ → devolver cambio (ver flujo siguiente) ↓</div>
+      <div class="f-label no" style="margin-bottom:4px;">NO ↓</div>
+      <div class="fn-rect"><strong>Resetear saldo a cero</strong><br>Volver a la pantalla inicial</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-oval end">✓ Venta completada</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">↩️ ¿Cómo se devuelve el cambio?</div>
+    <p style="margin-bottom:24px;">El sistema usa la <strong>moneda más grande posible</strong> en cada paso hasta devolver todo el cambio.</p>
+    <div class="flow-outer">
+      <div class="fn-oval">Hay cambio que devolver</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-rect red"><strong>Pantalla: "Devolviendo..."</strong></div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="31" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 2€ y hay monedas de 2€?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 2€ · saldo – 2€ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 1€ y hay monedas de 1€?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 1€ · saldo – 1€ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 50¢ y hay monedas de 50¢?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 50¢ · saldo – 50¢ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 20¢ y hay monedas de 20¢?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 20¢ · saldo – 20¢ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 10¢ y hay monedas de 10¢?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 10¢ · saldo – 10¢ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(232,69,69,0.08)" stroke="#e84545" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" font-weight="700" fill="#e84545">¿Saldo ≥ 5¢ y hay monedas de 5¢?</text>
+        </svg>
+      </div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ → expulsar moneda de 5¢ · saldo – 5¢ ↓</div>
+      <div style="position:relative;width:380px;margin:0 auto;">
+        <svg width="380" height="72" viewBox="0 0 380 72" style="display:block;">
+          <polygon points="190,4 376,36 190,68 4,36" fill="rgba(245,166,35,0.10)" stroke="#f5a623" stroke-width="2"/>
+          <text x="190" y="40" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" font-weight="700" fill="#f5a623">¿El saldo ya es cero?</text>
+        </svg>
+      </div>
+      <div class="f-label loop">NO → repetir desde el principio ↑</div>
+      <div class="f-label yes" style="margin-bottom:4px;">SÍ ↓</div>
+      <div class="f-arrow"><div class="f-line"></div><div class="f-tip"></div></div>
+      <div class="fn-oval end">✓ Cambio devuelto</div>
+    </div>
+    <p style="margin-top:14px;font-size:13px;color:var(--text-dim);">Cada servo gira de 0° a 180° y vuelve a 0°, empujando y liberando una moneda. La velocidad es controlada con un retardo de 15ms por paso.</p>
+  </div>
+</section>
+
+<!-- ══════ 04 PROBLEMAS ══════ -->
+<section class="section" id="problemas">
+  <div class="section-header">
+    <div class="section-eyebrow">04 // Desarrollo del proyecto</div>
+    <div class="section-title">Problemas &amp; <span class="highlight">Soluciones</span></div>
+  </div>
+
+  <div class="prob-group">
+    <div class="problem-card">
+      <div class="plabel p">⚠ PROBLEMA 01</div>
+      <div class="static-p">Las revoluciones de los motores no está regulada</div>
+    </div>
+    <div class="connector-down">↓</div>
+    <div class="solution-card">
+      <div class="plabel s">✓ SOLUCIÓN PROPUESTA</div>
+      <div class="static-p">Implementar puentes H</div>
+    </div>
+  </div>
+
+  <div class="prob-group">
+    <div class="problem-card">
+      <div class="plabel p">⚠ PROBLEMA 02</div>
+      <div class="static-p">Físicamente los ejes de los servos no da para dispensar las monedas</div>
+    </div>
+    <div class="connector-down">↓</div>
+    <div class="solution-card">
+      <div class="plabel s">✓ SOLUCIÓN PROPUESTA</div>
+      <div class="static-p">Diseñar un nuevo método de dispensado, algo como que se expulse la segunda o tercera moneda de la columna y que haya espacio de sobra para que el servo tenga margen de movimiento</div>
+    </div>
+  </div>
+
+  <div class="prob-group">
+    <div class="problem-card">
+      <div class="plabel p">⚠ PROBLEMA 03</div>
+      <div class="static-p">Nos ha faltado bastante material</div>
+    </div>
+    <div class="connector-down">↓</div>
+    <div class="solution-card">
+      <div class="plabel s">✓ SOLUCIÓN PROPUESTA</div>
+      <div class="static-p">Obtener el material al principio del proyecto y/o saber qué no vamos a poder tener desde un inicio</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 05 ARREGLOS ══════ -->
+<section class="section" id="arreglos">
+  <div class="section-header">
+    <div class="section-eyebrow">05 // Resolución de incidencias</div>
+    <div class="section-title">Arreglos &amp; <span class="highlight">Estado</span></div>
+  </div>
+
+  <div class="arreglo-card">
+    <div class="arreglo-num-badge">// 01</div>
+    <div class="arreglo-plabel">⚠ PROBLEMA</div>
+    <div class="static-p">Falta de sinfines</div>
+    <div class="arreglo-slabel">✓ SOLUCIÓN / ESTADO</div>
+    <div class="static-p">Hemos creado sinfines propios (solución hecha pero al final no era viable debido al material y al peso del componente) — Por ello nos ha generado una limitación de 3 motores</div>
+    <div class="arreglo-status-row">
+      <span class="arreglo-status-label">Resultado:</span>
+      <div class="status-badge fail">✗</div>
+      <span class="status-text fail">NO RESUELTO</span>
+    </div>
+  </div>
+
+  <div class="arreglo-card">
+    <div class="arreglo-num-badge">// 02</div>
+    <div class="arreglo-plabel">⚠ PROBLEMA</div>
+    <div class="static-p">Modelos 3D poco efectivos en la realidad</div>
+    <div class="arreglo-slabel">✓ SOLUCIÓN / ESTADO</div>
+    <div class="static-p">Hemos creado nuevos modelos, modificando los anteriores (han funcionado)</div>
+    <div class="arreglo-status-row">
+      <span class="arreglo-status-label">Resultado:</span>
+      <div class="status-badge ok">✓</div>
+      <span class="status-text ok">RESUELTO</span>
+    </div>
+  </div>
+
+  <div class="arreglo-card">
+    <div class="arreglo-num-badge">// 03</div>
+    <div class="arreglo-plabel">⚠ PROBLEMA</div>
+    <div class="static-p">Fallo técnico de último momento con uno de los motores</div>
+    <div class="arreglo-slabel">✓ SOLUCIÓN / ESTADO</div>
+    <div class="static-p">Hemos retirado el motor que nos ha fallado, siendo que nos ha sido imposible arreglarlo a tiempo</div>
+    <div class="arreglo-status-row">
+      <span class="arreglo-status-label">Resultado:</span>
+      <div class="status-badge fail">✗</div>
+      <span class="status-text fail">NO RESUELTO</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 06 CONCLUSIONES ══════ -->
+<section class="section" id="conclusiones">
+  <div class="section-header">
+    <div class="section-eyebrow">06 // Cierre</div>
+    <div class="section-title">Conclusiones &amp; <span class="highlight">Mejoras</span></div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:32px;">
+    <div class="card" style="border-left:3px solid var(--accent2);">
+      <div class="card-title" style="color:var(--accent2);">✓ Requisitos cumplidos</div>
+      <p>Se ha construido una <strong>máquina expendedora completamente funcional</strong>: validación de 6 denominaciones, dispensado de 4 productos, devolución de cambio exacta, interfaz LCD y almacenamiento persistente en EEPROM.</p>
+    </div>
+    <div class="card" style="border-left:3px solid var(--accent);">
+      <div class="card-title">📊 Valoración general</div>
+      <p>El proyecto integró de forma real <strong>electrónica, programación, CAD e impresión 3D</strong>. Destaca la PCB de relés como solución al problema de los dos niveles de tensión y la robustez del algoritmo de cambio.</p>
+    </div>
+  </div>
+
+  <div class="sub-label">Mejoras futuras</div>
+  <div class="card">
+    <div class="card-title">🚀 Líneas de mejora identificadas</div>
+    <div class="conc-item"><span class="conc-num">01</span><div class="conc-text">Añadir controladores PWM (puentes H) para controlar los motores</div></div>
+    <div class="conc-item"><span class="conc-num">02</span><div class="conc-text">Implementar fuentes de alimentación de 12 y de 5 voltios</div></div>
+    <div class="conc-item"><span class="conc-num">03</span><div class="conc-text">Comprar sinfines adecuados para colocarlos en los motores</div></div>
+    <div class="conc-item"><span class="conc-num">04</span><div class="conc-text">Encontrar una manera de que los servos puedan hacer el movimiento correspondiente</div></div>
+    <div class="conc-item"><span class="conc-num">05</span><div class="conc-text">Añadir canaletas para mantener mayor orden</div></div>
+    <div class="conc-item"><span class="conc-num">06</span><div class="conc-text">Añadir componentes que aporten seguridad (no solamente un botón de on/off)</div></div>
+    <div class="conc-item"><span class="conc-num">07</span><div class="conc-text">Añadir modificaciones mecánicas, desde compuertas para recoger el producto hasta integración de la LCD en el metacrilato</div></div>
+    <div class="conc-item"><span class="conc-num">08</span><div class="conc-text">Añadir cintas transportadoras en vez de sinfines (posible solución a los sinfines)</div></div>
+  </div>
+
+  <div style="text-align:center;padding:48px 0 32px;">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:3px;margin-bottom:12px;text-transform:uppercase;">Fin de la presentación</div>
+    <div style="font-family:var(--cond);font-size:52px;font-weight:900;color:rgba(245,166,35,0.12);letter-spacing:2px;">SNACK-O-MATIC</div>
+    <div style="font-family:var(--mono);font-size:11px;color:var(--text-dim);margin-top:8px;">Wally SL · David, Ibon &amp; Iker · Arduino Mega 2560 // C/C++</div>
+  </div>
+</section>
+
+</main>
+
+<div class="statusbar">
+  <div class="status-item"><div class="status-dot"></div> Snack-o-Matic</div>
+  <div class="status-item" id="sLabel">01 — Introducción</div>
+  <div class="status-item" style="margin-left:auto;">Wally SL · Arduino Mega 2560</div>
+</div>
+
+<script>
+var NAV_LABELS = {
+  intro:'01 — Introducción', bloques:'02 — Diagrama de Bloques',
+  detalle:'03 — Descripción Detallada', problemas:'04 — Problemas & Soluciones',
+  arreglos:'05 — Arreglos', conclusiones:'06 — Conclusiones'
+};
+var NAV_PCTS = { intro:16, bloques:33, detalle:50, problemas:66, arreglos:83, conclusiones:100 };
+
+function go(id, el) {
+  document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  document.getElementById('sLabel').textContent = NAV_LABELS[id];
+  document.getElementById('pFill').style.width = NAV_PCTS[id] + '%';
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
